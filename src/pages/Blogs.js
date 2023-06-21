@@ -19,6 +19,7 @@ class Blogs extends React.Component {
     ];
     return (
       <>
+        {/*
         <div>
           <h1>My Favorite Color is {this.state.favoritecolor}</h1>
           <div id="div1"></div>
@@ -31,6 +32,14 @@ class Blogs extends React.Component {
             key
             ={item.id}>{item.name}</li>)}
         </ul>
+          */}
+        <div className="App">
+          <header className="App-header">
+            <p>
+              Dashboard is in progress...
+            </p>
+          </header>
+        </div>
       </>
     );
   }
