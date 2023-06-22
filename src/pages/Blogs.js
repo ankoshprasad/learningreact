@@ -1,49 +1,63 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
+import React, { useState, useEffect  } from 'react';
+import axios from 'axios';
 
-class Blogs extends React.Component {
+function Blogs() {
+ 
+  const [posts,setPosts] = useState([]);
+  const [reposts,resetPosts] = useState([]);
+  const [submitposts,submitsetPosts] = useState([]);
+  const year = 2023;
+  const id = 13;
 
-  constructor(props) {
-    super(props);
-    this.state = { favoritecolor: "red" };
+  useEffect(() => {
+    axios.get('http://localhost/REST-APIS/items/read')
+      .then(response => {
+        console.log(response)
+        setPosts(response.data.items);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+      axios.get('http://localhost/REST-APIS/items/read?year='+2023)
+      .then(response => {
+        console.log(response)
+        resetPosts(response.data.items);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  },
+   []);
+
+  
+   const shoot = () => {
+      axios.post('http://localhost/REST-APIS/items/delete', {id}).then(response => {
+          console.log(response)
+          submitsetPosts(response.data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    
   }
 
-  render() {
-    const shoot = (a) => {
-      alert(a);
-    }
-    const items = [
-      { id: 1, name: 'bread' },
-      { id: 2, name: 'milk' },
-      { id: 3, name: 'eggs' }
-    ];
-    return (
-      <>
-        {/*
-        <div>
-          <h1>My Favorite Color is {this.state.favoritecolor}</h1>
-          <div id="div1"></div>
-          <div id="div2"></div>
-          <button onClick={() => shoot("Goal!")}>Take the shot!</button>
-        </div>
-        <h1>Grocery List</h1>
-        <ul>
-          {items.map((item) => <li
-            key
-            ={item.id}>{item.name}</li>)}
-        </ul>
-          */}
-        <div className="App">
-          <header className="App-header">
-            <p>
-              Dashboard is in progress...
-            </p>
-          </header>
-        </div>
-      </>
-    );
-  }
-
+  return (
+    <>
+    <ul>
+      {posts.map(post => (
+        <li key={post.id}>{post.month}</li>
+      ))}
+    </ul>
+    <ul>
+      {reposts.map(post => (
+        <li key={post.id}>{post.month}</li>
+      ))}
+    </ul>
+    <button onClick={shoot}>Take the shot!</button>
+    </>
+  );
+ 
 }
 
 export default Blogs;
