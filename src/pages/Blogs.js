@@ -1,7 +1,11 @@
 import ReactDOM from 'react-dom/client';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { fetchData } from './request'
+import { fetchData } from './request';
+import { addData } from './request';
+import '../App.css';
+import { Modal, Button } from 'react-bootstrap';
+
 
 function Blogs() {
 
@@ -12,11 +16,17 @@ function Blogs() {
   const [body, setBody] = useState('');
   const year = 2023;
   const id = 13;
+  const [isShow, invokeModal] = React.useState(false)
+  const initModal = () => {
+    return invokeModal(!false)
+  }
+  const initModalhide = () => {
+    return invokeModal(false)
+  }
 
   useEffect(() => {
     axios.get('http://localhost/REST-APIS/items/read')
       .then(response => {
-        console.log(response)
         setPosts(response.data.items);
       })
       .catch(error => {
@@ -58,7 +68,17 @@ function Blogs() {
 
   const fetchfromservice = () => {
     var config = { "Access-Control-Allow-Origin": "*" }
-    fetchData(year,config, (res) => {
+    addData(year, config, (res) => {
+      console.log(res)
+    }, (err) => {
+      //error
+      alert(err);
+    });
+  }
+
+  const addDatafromservice = () => {
+    var config = { "Access-Control-Allow-Origin": "*" }
+    addData(id, config, (res) => {
       console.log(res)
     }, (err) => {
       //error
@@ -87,9 +107,9 @@ function Blogs() {
       });
   };
 
-
   return (
     <>
+      {/*
       <ul>
         {posts.map(post => (
           <li key={post.id}>{post.month}</li>
@@ -100,7 +120,50 @@ function Blogs() {
           <li key={post.id}>{post.month}</li>
         ))}
       </ul>
-      <button onClick={fetchfromservice}>Take the shot!</button>
+      <button onClick={addDatafromservice}>Take the shot!</button>
+      */}
+
+      <div className='mt-3'>
+        <div className='my-3 me-2 float-end'> <Button variant="success" onClick={initModal}>Open Modal</Button></div>
+        
+        <table className="table table-bordered">
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>Year</th>
+              <th>Volume</th>
+            </tr>
+          </thead>
+          <tbody>
+            {posts.map(post => {
+              return (
+                <tr key={post.id}>
+                  <td>{post.month}</td>
+                  <td>{post.year}</td>
+                  <td>{post.volume}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <Modal show={isShow}>
+        <Modal.Header closeButton onClick={initModalhide}>
+          <Modal.Title>React Modal Popover Example</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={initModalhide}>
+            Close
+          </Button>
+          <Button variant="dark" onClick={initModalhide}>
+            Store
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 
