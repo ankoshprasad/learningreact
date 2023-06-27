@@ -5,10 +5,11 @@ import { fetchData } from './request';
 import { addData } from './request';
 import '../App.css';
 import { Modal, Button } from 'react-bootstrap';
+import {useFormik} from 'formik';
 
 
 function Blogs() {
-
+ 
   const [posts, setPosts] = useState([]);
   const [reposts, resetPosts] = useState([]);
   const [submitposts, submitsetPosts] = useState([]);
@@ -23,6 +24,40 @@ function Blogs() {
   const initModalhide = () => {
     return invokeModal(false)
   }
+  const [inputs, setInputs] = useState({});
+
+  const handleChange = (event) => {
+    const name = event.target.name;
+    const value = event.target.value;
+    setInputs(values => ({...values, [name]: value}))
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log(inputs);
+   
+  }
+
+  const validateData = empData => {
+    const errors = {};
+  
+    if (!empData.month) {
+      errors.month = 'Please Enter Month';
+    } else if (empData.month.length > 30) {
+      errors.month = 'Month cannot exceed 30 characters';
+    }
+  
+    if (!empData.year) {
+      errors.year = 'Please Enter year';
+    } 
+
+    if (!empData.volume) {
+      errors.volume = 'Please Enter volume';
+    } 
+  
+  
+    return errors;
+  };
 
   useEffect(() => {
     axios.get('http://localhost/REST-APIS/items/read')
@@ -107,9 +142,22 @@ function Blogs() {
       });
   };
 
+  const formik=useFormik({
+    initialValues:{
+      month:'',
+      year:'',
+      volume:''
+    },
+    validate:validateData,
+    onSubmit:values=>{
+      alert(JSON.stringify(values));
+    }
+  });
+
   return (
+    
     <>
-      {/*
+     {/*
       <ul>
         {posts.map(post => (
           <li key={post.id}>{post.month}</li>
@@ -122,7 +170,6 @@ function Blogs() {
       </ul>
       <button onClick={addDatafromservice}>Take the shot!</button>
       */}
-
       <div className='mt-3'>
         <div className='my-3 me-2 float-end'> <Button variant="success" onClick={initModal}>Open Modal</Button></div>
         
@@ -153,16 +200,34 @@ function Blogs() {
           <Modal.Title>React Modal Popover Example</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          <form onSubmit={formik.handleSubmit}>
+           
+            <div class="form-group mb-3">
+              <label htmlFor="month">Enter Month : </label>
+              <input type="text" class="form-control" name="month" id="month" value={formik.values.month}
+                onChange={formik.handleChange} onBlur={formik.handleBlur}></input>
+              {formik.touched.month && formik.errors.month ? <span style={{ color: 'red' }}>{formik.errors.month}</span> : null}
+            </div>
+
+            <div class="form-group mb-3">
+              <label htmlFor="year">Enter Year : </label>
+              <input type="number" class="form-control" name="year" id="year" value={formik.values.year}
+                onChange={formik.handleChange} onBlur={formik.handleBlur}></input>
+              {formik.touched.year && formik.errors.year ? <span style={{ color: 'red' }}>{formik.errors.year}</span> : null}
+            </div>
+
+            <div class="form-group mb-3">
+              <label htmlFor="volume">Enter Volume : </label>
+              <input type="number" class="form-control" name="volume" id="volume" value={formik.values.volume}
+                onChange={formik.handleChange}></input>
+              {formik.touched.volume && formik.errors.volume ? <span style={{ color: 'red' }}>{formik.errors.volume}</span> : null}
+            </div>
+            
+            <button className="btn btn-primary float-end mt-3" type="submit">Add Data</button>
+          </form>
+
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="danger" onClick={initModalhide}>
-            Close
-          </Button>
-          <Button variant="dark" onClick={initModalhide}>
-            Store
-          </Button>
-        </Modal.Footer>
+      
       </Modal>
     </>
   );
