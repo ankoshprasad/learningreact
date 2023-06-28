@@ -3,13 +3,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { fetchData } from './request';
 import { addData } from './request';
+import { addPostData } from './request';
 import '../App.css';
 import { Modal, Button } from 'react-bootstrap';
 import {useFormik} from 'formik';
 
 
 function Blogs() {
- 
+  
   const [posts, setPosts] = useState([]);
   const [reposts, resetPosts] = useState([]);
   const [submitposts, submitsetPosts] = useState([]);
@@ -17,6 +18,7 @@ function Blogs() {
   const [body, setBody] = useState('');
   const year = 2023;
   const id = 13;
+ 
   const [isShow, invokeModal] = React.useState(false)
   const initModal = () => {
     return invokeModal(!false)
@@ -32,11 +34,7 @@ function Blogs() {
     setInputs(values => ({...values, [name]: value}))
   }
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log(inputs);
-   
-  }
+  
 
   const validateData = empData => {
     const errors = {};
@@ -120,7 +118,18 @@ function Blogs() {
       alert(err);
     });
   }
-
+  
+{/* Add data 
+  const addPostservice = () => {
+    var config = { "Access-Control-Allow-Origin": "*" }
+    addPostData(dataValue, config, (res) => {
+      console.log(res)
+    }, (err) => {
+      //error
+      alert(err);
+    });
+  }
+*/}
   const addPosts = async (id) => {
     await fetch('http://localhost/REST-APIS/items/delete', {
       method: 'POST',
@@ -148,28 +157,20 @@ function Blogs() {
       year:'',
       volume:''
     },
-    validate:validateData,
-    onSubmit:values=>{
-      alert(JSON.stringify(values));
+    validate: validateData,
+    onSubmit: values => {
+      var config = { "Access-Control-Allow-Origin": "*" }
+      addPostData(values, config, (res) => {
+        console.log(res)
+      }, (err) => {
+        //error
+        alert(err);
+      });
     }
   });
 
   return (
-    
     <>
-     {/*
-      <ul>
-        {posts.map(post => (
-          <li key={post.id}>{post.month}</li>
-        ))}
-      </ul>
-      <ul>
-        {reposts.map(post => (
-          <li key={post.id}>{post.month}</li>
-        ))}
-      </ul>
-      <button onClick={addDatafromservice}>Take the shot!</button>
-      */}
       <div className='mt-3'>
         <div className='my-3 me-2 float-end'> <Button variant="success" onClick={initModal}>Open Modal</Button></div>
         
@@ -202,28 +203,28 @@ function Blogs() {
         <Modal.Body>
           <form onSubmit={formik.handleSubmit}>
            
-            <div class="form-group mb-3">
+            <div className="form-group mb-3">
               <label htmlFor="month">Enter Month : </label>
-              <input type="text" class="form-control" name="month" id="month" value={formik.values.month}
+              <input type="text" className="form-control" name="month" id="month" value={formik.values.month}
                 onChange={formik.handleChange} onBlur={formik.handleBlur}></input>
               {formik.touched.month && formik.errors.month ? <span style={{ color: 'red' }}>{formik.errors.month}</span> : null}
             </div>
 
-            <div class="form-group mb-3">
+            <div className="form-group mb-3">
               <label htmlFor="year">Enter Year : </label>
-              <input type="number" class="form-control" name="year" id="year" value={formik.values.year}
+              <input type="number" className="form-control" name="year" id="year" value={formik.values.year}
                 onChange={formik.handleChange} onBlur={formik.handleBlur}></input>
               {formik.touched.year && formik.errors.year ? <span style={{ color: 'red' }}>{formik.errors.year}</span> : null}
             </div>
 
-            <div class="form-group mb-3">
+            <div className="form-group mb-3">
               <label htmlFor="volume">Enter Volume : </label>
-              <input type="number" class="form-control" name="volume" id="volume" value={formik.values.volume}
+              <input type="number" className="form-control" name="volume" id="volume" value={formik.values.volume}
                 onChange={formik.handleChange}></input>
               {formik.touched.volume && formik.errors.volume ? <span style={{ color: 'red' }}>{formik.errors.volume}</span> : null}
             </div>
             
-            <button className="btn btn-primary float-end mt-3" type="submit">Add Data</button>
+            <button className="btn btn-primary float-end mt-3"  type="submit">Add Data</button>
           </form>
 
         </Modal.Body>

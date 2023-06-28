@@ -33,3 +33,20 @@ export function addData(id,config, callback, errorcallback){
     }
   })
 }
+
+export function addPostData(dataValue,config, callback, errorcallback){
+  console.log(dataValue)
+  axios.post('http://localhost/REST-APIS/items/create',dataValue, config)
+  .then(res => {
+    //do something
+    if(callback != null){
+       callback(res);
+    }
+  })
+  .catch(err => {
+    // catch error
+    if(errorcallback != null){
+       errorcallback(err);
+    }
+  })
+}
