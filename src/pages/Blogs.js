@@ -7,10 +7,28 @@ import { addPostData } from './request';
 import '../App.css';
 import { Modal, Button } from 'react-bootstrap';
 import {useFormik} from 'formik';
-
+import { months } from "./months";
+import { useDynamicYears } from "./years";
+import { lastDayOfMonth, startOfMonth, getMonth, getYear } from "date-fns";
 
 function Blogs() {
-  
+  const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const dynamicYears = useDynamicYears({
+    startingYear: 2021,
+    numberOfYears: 3
+  });
+
+  const handleMonthSelect = (e) => {
+    const { value } = e.target;
+    const month = parseInt(value, 10);
+    setSelectedDate(new Date(getYear(selectedDate), month));
+  };
+
+  const handleYearSelect = (e) => {
+    const { value } = e.target;
+    const year = parseInt(value, 10);
+    setSelectedDate(new Date(year, getMonth(selectedDate)));
+  };
   const [posts, setPosts] = useState([]);
   const [reposts, resetPosts] = useState([]);
   const [submitposts, submitsetPosts] = useState([]);
@@ -158,7 +176,8 @@ function Blogs() {
       volume:''
     },
     validate: validateData,
-    onSubmit: values => {
+    onSubmit: (values,{ resetForm }) => {
+      alert('hello')
       var config = { "Access-Control-Allow-Origin": "*" }
       addPostData(values, config, (res) => {
         console.log(res)
@@ -166,9 +185,13 @@ function Blogs() {
         //error
         alert(err);
       });
+      resetForm();
     }
   });
-
+  const options = [
+    { value: "Não", label: "Não" },
+    { value: "Sim", label: "Sim" },
+  ];
   return (
     <>
       <div className='mt-3'>
@@ -202,19 +225,31 @@ function Blogs() {
         </Modal.Header>
         <Modal.Body>
           <form onSubmit={formik.handleSubmit}>
-           
+
             <div className="form-group mb-3">
               <label htmlFor="month">Enter Month : </label>
-              <input type="text" className="form-control" name="month" id="month" value={formik.values.month}
-                onChange={formik.handleChange} onBlur={formik.handleBlur}></input>
+              <select className="form-select" name="month" id="month" value={formik.values.month} onChange={formik.handleChange} onBlur={formik.handleBlur}>
+             <option value="">Select Month</option>
+                {months.map((key, index) => (
+                  <option value={key} key={index}>
+                    {key}
+                  </option>
+                ))}
+              </select>
               {formik.touched.month && formik.errors.month ? <span style={{ color: 'red' }}>{formik.errors.month}</span> : null}
             </div>
 
             <div className="form-group mb-3">
               <label htmlFor="year">Enter Year : </label>
-              <input type="number" className="form-control" name="year" id="year" value={formik.values.year}
-                onChange={formik.handleChange} onBlur={formik.handleBlur}></input>
-              {formik.touched.year && formik.errors.year ? <span style={{ color: 'red' }}>{formik.errors.year}</span> : null}
+              <select className="form-select" name="year" id="year" value={formik.values.year} onChange={formik.handleChange} onBlur={formik.handleBlur}>
+              <option value="">Select Year</option>
+                {dynamicYears.map((key, index) => (
+                  <option value={key} key={index}>
+                    {key}
+                  </option>
+                ))}
+              </select>
+              {formik.touched.month && formik.errors.year ? <span style={{ color: 'red' }}>{formik.errors.year}</span> : null}
             </div>
 
             <div className="form-group mb-3">
