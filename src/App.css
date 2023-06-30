@@ -32,10 +32,21 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
-.btn{
+
+.btn {
   border-radius: 3px;
+  
+}
+
+.w-60 {
+  width: 60%;
+}
+
+.w-select {
+  width: 25%
 }

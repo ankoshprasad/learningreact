@@ -74,6 +74,15 @@ function Blogs() {
   
     return errors;
   };
+  const validatefData = empData => {
+    const errors = {};
+  
+    if (!empData.month) {
+      errors.month = 'Please Enter Month';
+    } 
+    return errors;
+  };
+
 
   useEffect(() => {
     axios.get('http://localhost/REST-APIS/items/read')
@@ -188,15 +197,43 @@ function Blogs() {
       resetForm();
     }
   });
-  const options = [
-    { value: "Não", label: "Não" },
-    { value: "Sim", label: "Sim" },
-  ];
+  const formikfilter=useFormik({
+    initialValues:{
+      month:''
+    },
+  //  validate: validatefData,
+    onSubmit: values => {
+      alert(JSON.stringify(values, null, 2));
+    //  resetForm();
+    }
+  });
+  
   return (
     <>
       <div className='mt-3'>
+        <div className='my-3 me-2 float-start w-60'>
+          <form onSubmit={formikfilter.handleSubmit}>
+            <div className='d-flex'>
+              <div className='mx-4 w-select'>
+              <select className="form-select" name="month" id="month" value={formikfilter.values.month} onChange={formikfilter.handleChange} onBlur={formikfilter.handleBlur}>
+                  <option value="">Select Month</option>
+                  {months.map((key, index) => (
+                    <option value={key} key={index}>
+                      {key}
+                    </option>
+                  ))}
+                </select> 
+                {formikfilter.touched.month && formikfilter.errors.month ? <span style={{ color: 'red' }}>{formikfilter.errors.month}</span> : null}
+
+              </div>
+              <div>
+                <button className="btn btn-primary float-end" type="submit">Filter Data</button>
+              </div>
+            </div>
+          </form>
+        </div>
         <div className='my-3 me-2 float-end'> <Button variant="success" onClick={initModal}>Open Modal</Button></div>
-        
+
         <table className="table table-bordered">
           <thead>
             <tr>
