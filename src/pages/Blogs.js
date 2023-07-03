@@ -8,6 +8,7 @@ import '../App.css';
 import { Modal, Button } from 'react-bootstrap';
 import {useFormik} from 'formik';
 import { months } from "./months";
+import { years } from "./years";
 import { useDynamicYears } from "./years";
 import { lastDayOfMonth, startOfMonth, getMonth, getYear } from "date-fns";
 
@@ -199,12 +200,20 @@ function Blogs() {
   });
   const formikfilter=useFormik({
     initialValues:{
-      month:''
+      year:''
     },
   //  validate: validatefData,
     onSubmit: values => {
-      alert(JSON.stringify(values, null, 2));
+      console.log(values.year);
     //  resetForm();
+    var config = { "Access-Control-Allow-Origin": "*" }
+    fetchData(values.year, config, (res) => {
+      console.log(res)
+      setPosts(res.data.items);
+    }, (err) => {
+      //error
+      alert(err);
+    });
     }
   });
   
@@ -215,9 +224,9 @@ function Blogs() {
           <form onSubmit={formikfilter.handleSubmit}>
             <div className='d-flex'>
               <div className='mx-4 w-select'>
-              <select className="form-select" name="month" id="month" value={formikfilter.values.month} onChange={formikfilter.handleChange} onBlur={formikfilter.handleBlur}>
-                  <option value="">Select Month</option>
-                  {months.map((key, index) => (
+              <select className="form-select" name="year" id="year" value={formikfilter.values.year} onChange={formikfilter.handleChange} onBlur={formikfilter.handleBlur}>
+                  <option value="">ALL</option>
+                  {years.map((key, index) => (
                     <option value={key} key={index}>
                       {key}
                     </option>
@@ -258,7 +267,7 @@ function Blogs() {
 
       <Modal show={isShow}>
         <Modal.Header closeButton onClick={initModalhide}>
-          <Modal.Title>React Modal Popover Example</Modal.Title>
+          <Modal.Title>Add Your Data</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <form onSubmit={formik.handleSubmit}>
