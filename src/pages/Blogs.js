@@ -46,6 +46,11 @@ function Blogs() {
     return invokeModal(false)
   }
   const [inputs, setInputs] = useState({});
+  
+  const [showResults, setShowResults] = React.useState(false)
+  const [noshowResults, nosetShowResults] = React.useState(true)
+ {/* const onClick = () => {setShowResults(true);nosetShowResults(false)}  */}
+  
 
   const handleChange = (event) => {
     const name = event.target.name;
@@ -208,17 +213,49 @@ function Blogs() {
     //  resetForm();
     var config = { "Access-Control-Allow-Origin": "*" }
     fetchData(values.year, config, (res) => {
-      console.log(res)
       setPosts(res.data.items);
     }, (err) => {
       //error
       alert(err);
+      setShowResults(true)
+      nosetShowResults(false)
     });
     }
   });
-  
+  const Results = () => (
+    <div id="results" className="search-results">
+      No data found
+    </div>
+  )
+  const NonResults = () => (
+    <table className="table table-bordered">
+    <thead>
+      <tr>
+        <th>Month</th>
+        <th>Year</th>
+        <th>Volume</th>
+      </tr>
+    </thead>
+    <tbody>
+      {posts.map(post => {
+        return (
+          <tr key={post.id}>
+            <td>{post.month}</td>
+            <td>{post.year}</td>
+            <td>{post.volume}</td>
+          </tr>
+        )
+      })}
+    </tbody>
+  </table>
+  )
   return (
     <>
+     <div>
+    
+      
+     
+    </div>
       <div className='mt-3'>
         <div className='my-3 me-2 float-start w-60'>
           <form onSubmit={formikfilter.handleSubmit}>
@@ -242,27 +279,9 @@ function Blogs() {
           </form>
         </div>
         <div className='my-3 me-2 float-end'> <Button variant="success" onClick={initModal}>Open Modal</Button></div>
-
-        <table className="table table-bordered">
-          <thead>
-            <tr>
-              <th>Month</th>
-              <th>Year</th>
-              <th>Volume</th>
-            </tr>
-          </thead>
-          <tbody>
-            {posts.map(post => {
-              return (
-                <tr key={post.id}>
-                  <td>{post.month}</td>
-                  <td>{post.year}</td>
-                  <td>{post.volume}</td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+        { showResults ? <Results /> : null }
+       
+        { noshowResults ? <NonResults /> : null }
       </div>
 
       <Modal show={isShow}>
