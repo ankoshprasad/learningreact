@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom/client';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { fetchData } from './request';
+import { fetchDataLoad }  from './request';
 import { addData } from './request';
 import { addPostData } from './request';
 import '../App.css';
@@ -88,17 +89,17 @@ function Blogs() {
     } 
     return errors;
   };
-
-
   useEffect(() => {
-    axios.get('http://localhost/REST-APIS/items/read')
-      .then(response => {
-        setPosts(response.data.items);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-
+    var config = { "Access-Control-Allow-Origin": "*" }
+    fetchDataLoad(config, (res) => {
+      setPosts(res.data.items);
+    }, (err) => {
+      //error
+      alert(err);
+      setShowResults(true)
+      nosetShowResults(false)
+    });
+ {/*}
     axios.get('http://localhost/REST-APIS/items/read?year=' + year)
       .then(response => {
         console.log(response)
@@ -107,7 +108,7 @@ function Blogs() {
       .catch(error => {
         console.error(error);
       });
-    {/*}
+   
       fetch('https://jsonplaceholder.typicode.com/posts?_limit=10')
          .then((response) => response.json())
          .then((data) => {
@@ -252,11 +253,10 @@ function Blogs() {
   return (
     <>
      <div>
-    
-      
      
     </div>
-      <div className='mt-3'>
+      <div className='mt-3 row mx-0'>
+        <div className='d-block '>
         <div className='my-3 me-2 float-start w-60'>
           <form onSubmit={formikfilter.handleSubmit}>
             <div className='d-flex'>
@@ -278,10 +278,10 @@ function Blogs() {
             </div>
           </form>
         </div>
-        <div className='my-3 me-2 float-end'> <Button variant="success" onClick={initModal}>Open Modal</Button></div>
-        { showResults ? <Results /> : null }
-       
-        { noshowResults ? <NonResults /> : null }
+        <div className='d-block my-3 me-2 float-end'> <Button variant="success" onClick={initModal}>Open Modal</Button></div>
+        </div>
+        <div className='d-block text-center mt-5'>{ showResults ? <Results /> : null }</div>
+        <div>   { noshowResults ? <NonResults /> : null }</div>
       </div>
 
       <Modal show={isShow}>

@@ -17,6 +17,22 @@ export function fetchData(year,config, callback, errorcallback){
     })
 }
 
+export function fetchDataLoad(config, callback, errorcallback){
+  axios.get('http://localhost/REST-APIS/items/read', config)
+  .then(res => {
+    //do something
+    if(callback != null){
+       callback(res);
+    }
+  })
+  .catch(err => {
+    // catch error
+    if(errorcallback != null){
+       errorcallback(err);
+    }
+  })
+}
+
 export function addData(id,config, callback, errorcallback){
   console.log(id)
   axios.post('http://localhost/REST-APIS/items/delete',{ id }, config)
