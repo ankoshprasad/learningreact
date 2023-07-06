@@ -1,15 +1,15 @@
 export const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
+    "JANUARY",
+    "FEBRUARY",
+    "MARCH",
+    "APRIL",
+    "MAY",
     "JUNE",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
+    "JULY",
+    "AUGUST",
+    "SEPTEMBER",
+    "OCTOBER",
+    "NOVEMBER",
+    "DECEMBER"
   ];
   

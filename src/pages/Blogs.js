@@ -1,10 +1,7 @@
 import ReactDOM from 'react-dom/client';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { fetchData } from './request';
-import { fetchDataLoad }  from './request';
-import { addData } from './request';
-import { addPostData } from './request';
+import { addPostData,editPostData,fetchData,fetchDataLoad,addData} from './request';
 import '../App.css';
 import { Modal, Button } from 'react-bootstrap';
 import {useFormik} from 'formik';
@@ -14,31 +11,15 @@ import { useDynamicYears } from "./years";
 import { lastDayOfMonth, startOfMonth, getMonth, getYear } from "date-fns";
 
 function Blogs() {
-  const [selectedDate, setSelectedDate] = React.useState(new Date());
   const dynamicYears = useDynamicYears({
     startingYear: 2021,
     numberOfYears: 3
   });
 
-  const handleMonthSelect = (e) => {
-    const { value } = e.target;
-    const month = parseInt(value, 10);
-    setSelectedDate(new Date(getYear(selectedDate), month));
-  };
-
-  const handleYearSelect = (e) => {
-    const { value } = e.target;
-    const year = parseInt(value, 10);
-    setSelectedDate(new Date(year, getMonth(selectedDate)));
-  };
+  
   const [posts, setPosts] = useState([]);
-  const [reposts, resetPosts] = useState([]);
-  const [submitposts, submitsetPosts] = useState([]);
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
-  const year = 2023;
   const id = 13;
- 
+  {/*Add modal*/}
   const [isShow, invokeModal] = React.useState(false)
   const initModal = () => {
     return invokeModal(!false)
@@ -46,21 +27,27 @@ function Blogs() {
   const initModalhide = () => {
     return invokeModal(false)
   }
-  const [inputs, setInputs] = useState({});
-  
-  const [showResults, setShowResults] = React.useState(false)
-  const [noshowResults, nosetShowResults] = React.useState(true)
- {/* const onClick = () => {setShowResults(true);nosetShowResults(false)}  */}
-  
 
-  const handleChange = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
-    setInputs(values => ({...values, [name]: value}))
+   {/*Edit modal*/}
+  const [iseditShow, editModal] = React.useState(false)
+  const initEditModal = (info) => {
+    console.log(info)
+    formikedit.setFieldValue("id",info.id);
+    formikedit.setFieldValue("month",info.month);
+    formikedit.setFieldValue("year",info.year);
+    formikedit.setFieldValue("volume",info.volume);
+    return editModal(!false)
+  }
+  const initEditModalhide = () => {
+    return editModal(false)
   }
 
-  
+   {/*Edit modal*/}
+  const [showResults, setShowResults] = React.useState(false)
+  const [noshowResults, nosetShowResults] = React.useState(true)
 
+  
+{/*Validation for add modal*/}
   const validateData = empData => {
     const errors = {};
   
@@ -81,14 +68,18 @@ function Blogs() {
   
     return errors;
   };
-  const validatefData = empData => {
+
+  {/*Validation for Edit modal*/}
+  const validateeditData = empData => {
     const errors = {};
   
-    if (!empData.month) {
-      errors.month = 'Please Enter Month';
+    if (!empData.volume) {
+      errors.volume = 'Please Enter Volume';
     } 
     return errors;
   };
+
+  {/*Fetch Table Data*/}
   useEffect(() => {
     var config = { "Access-Control-Allow-Origin": "*" }
     fetchDataLoad(config, (res) => {
@@ -99,91 +90,8 @@ function Blogs() {
       setShowResults(true)
       nosetShowResults(false)
     });
- {/*}
-    axios.get('http://localhost/REST-APIS/items/read?year=' + year)
-      .then(response => {
-        console.log(response)
-        resetPosts(response.data.items);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-   
-      fetch('https://jsonplaceholder.typicode.com/posts?_limit=10')
-         .then((response) => response.json())
-         .then((data) => {
-            console.log(data);
-            setPosts(data);
-         })
-         .catch((err) => {
-            console.log(err.message);
-         });
-        */}
   },
     []);
-
-  const shoot = () => {
-    axios.post('http://localhost/REST-APIS/items/delete', { id }).then(response => {
-      console.log(response)
-      submitsetPosts(response.data);
-    })
-      .catch(error => {
-        console.error(error);
-      });
-
-  }
-
-  const fetchfromservice = () => {
-    var config = { "Access-Control-Allow-Origin": "*" }
-    addData(year, config, (res) => {
-      console.log(res)
-    }, (err) => {
-      //error
-      alert(err);
-    });
-  }
-
-  const addDatafromservice = () => {
-    var config = { "Access-Control-Allow-Origin": "*" }
-    addData(id, config, (res) => {
-      console.log(res)
-    }, (err) => {
-      //error
-      alert(err);
-    });
-  }
-  
-{/* Add data 
-  const addPostservice = () => {
-    var config = { "Access-Control-Allow-Origin": "*" }
-    addPostData(dataValue, config, (res) => {
-      console.log(res)
-    }, (err) => {
-      //error
-      alert(err);
-    });
-  }
-*/}
-  const addPosts = async (id) => {
-    await fetch('http://localhost/REST-APIS/items/delete', {
-      method: 'POST',
-      body: JSON.stringify({
-        id: 100
-      }),
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        submitsetPosts((posts) => [data, ...posts]);
-        setTitle('');
-        setBody('');
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  };
 
   const formik=useFormik({
     initialValues:{
@@ -193,10 +101,8 @@ function Blogs() {
     },
     validate: validateData,
     onSubmit: (values,{ resetForm }) => {
-      alert('hello')
       var config = { "Access-Control-Allow-Origin": "*" }
       addPostData(values, config, (res) => {
-        console.log(res)
       }, (err) => {
         //error
         alert(err);
@@ -206,11 +112,12 @@ function Blogs() {
   });
   const formikfilter=useFormik({
     initialValues:{
-      year:''
+      month:'',
+      year:'',
+      volume:''
     },
   //  validate: validatefData,
     onSubmit: values => {
-      console.log(values.year);
     //  resetForm();
     var config = { "Access-Control-Allow-Origin": "*" }
     fetchData(values.year, config, (res) => {
@@ -220,6 +127,25 @@ function Blogs() {
       alert(err);
       setShowResults(true)
       nosetShowResults(false)
+    });
+    }
+  });
+  const formikedit=useFormik({
+    initialValues:{
+      id:'',
+      month:'',
+      year:'',
+      volume:''
+    },
+    validate: validateeditData,
+    onSubmit: values => {
+      console.log(values);
+    //  resetForm();
+    var config = { "Access-Control-Allow-Origin": "*" }
+    editPostData(values, config, (res) => {
+      setPosts(res.data.items);
+    }, (err) => {
+      //error
     });
     }
   });
@@ -235,6 +161,7 @@ function Blogs() {
         <th>Month</th>
         <th>Year</th>
         <th>Volume</th>
+        <th>Action</th>
       </tr>
     </thead>
     <tbody>
@@ -244,6 +171,7 @@ function Blogs() {
             <td>{post.month}</td>
             <td>{post.year}</td>
             <td>{post.volume}</td>
+            <td><button onClick={()=>{initEditModal(post)}} className='btn btn-primary px-4 py-1' type="button">Edit</button></td>
           </tr>
         )
       })}
@@ -253,7 +181,6 @@ function Blogs() {
   return (
     <>
      <div>
-     
     </div>
       <div className='mt-3 row mx-0'>
         <div className='d-block '>
@@ -270,7 +197,6 @@ function Blogs() {
                   ))}
                 </select> 
                 {formikfilter.touched.month && formikfilter.errors.month ? <span style={{ color: 'red' }}>{formikfilter.errors.month}</span> : null}
-
               </div>
               <div>
                 <button className="btn btn-primary float-end" type="submit">Filter Data</button>
@@ -290,7 +216,6 @@ function Blogs() {
         </Modal.Header>
         <Modal.Body>
           <form onSubmit={formik.handleSubmit}>
-
             <div className="form-group mb-3">
               <label htmlFor="month">Enter Month : </label>
               <select className="form-select" name="month" id="month" value={formik.values.month} onChange={formik.handleChange} onBlur={formik.handleBlur}>
@@ -323,12 +248,58 @@ function Blogs() {
                 onChange={formik.handleChange}></input>
               {formik.touched.volume && formik.errors.volume ? <span style={{ color: 'red' }}>{formik.errors.volume}</span> : null}
             </div>
-            
             <button className="btn btn-primary float-end mt-3"  type="submit">Add Data</button>
           </form>
-
         </Modal.Body>
+      </Modal>
+
+      {/* Edit Modal*/}
       
+      <Modal show={iseditShow}>
+        <Modal.Header closeButton onClick={initEditModalhide}>
+          <Modal.Title>Add Your Data</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form onSubmit={formikedit.handleSubmit}>
+            <div className="form-group mb-3">
+            <input type="hidden" className="form-control" name="id" id="id" value={formikedit.values.id}
+                onChange={formikedit.handleChange}></input>
+
+              <label htmlFor="month">Enter Month : </label>
+              <select className="form-select" name="month" id="month" value={formikedit.values.month} onChange={formikedit.handleChange} onBlur={formikedit.handleBlur}>
+             <option value="">Select Month</option>
+                {months.map((key, index) => (
+                  <option value={key} key={index}>
+                    {key}
+                  </option>
+                ))}
+              </select>
+              {formikedit.touched.month && formikedit.errors.month ? <span style={{ color: 'red' }}>{formikedit.errors.month}</span> : null}
+            </div>
+
+            <div className="form-group mb-3">
+              <label htmlFor="year">Enter Year : </label>
+              <select className="form-select" name="year" id="year" value={formikedit.values.year} onChange={formikedit.handleChange} onBlur={formikedit.handleBlur}>
+              <option value="">Select Year</option>
+                {dynamicYears.map((key, index) => (
+                  <option value={key} key={index}>
+                    {key}
+                  </option>
+                ))}
+              </select>
+              {formikedit.touched.month && formikedit.errors.year ? <span style={{ color: 'red' }}>{formikedit.errors.year}</span> : null}
+            </div>
+
+            <div className="form-group mb-3">
+              <label htmlFor="volume">Enter Volume : </label>
+              <input type="number" className="form-control" name="volume" id="volume" value={formikedit.values.volume}
+                onChange={formikedit.handleChange}></input>
+              {formikedit.touched.volume && formikedit.errors.volume ? <span style={{ color: 'red' }}>{formikedit.errors.volume}</span> : null}
+            </div>
+            
+            <button className="btn btn-primary float-end mt-3"  type="submit">Update Data</button>
+          </form>
+        </Modal.Body>
       </Modal>
     </>
   );
